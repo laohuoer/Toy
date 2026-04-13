@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, memo } from 'react';
 import { useGameStore } from '@/lib/store';
 import { BADGE_MAP, RARITY_COLORS, RARITY_GLOW } from '@/lib/badges';
 import { FridgePlacement } from '@/lib/types';
@@ -13,7 +13,14 @@ interface BadgeOnFridgeProps {
   isSelected?: boolean;
 }
 
-function BadgeOnFridge({ placement, onDragStart, onClick, isSelected }: BadgeOnFridgeProps) {
+// Memoized: only re-renders when its own placement/selection state changes,
+// preventing the entire badge list from repainting during drag.
+const BadgeOnFridge = memo(function BadgeOnFridge({
+  placement,
+  onDragStart,
+  onClick,
+  isSelected,
+}: BadgeOnFridgeProps) {
   const badge = BADGE_MAP[placement.badgeId];
   if (!badge) return null;
 
@@ -70,31 +77,40 @@ function BadgeOnFridge({ placement, onDragStart, onClick, isSelected }: BadgeOnF
       />
     </div>
   );
-}
+});
 
 interface FridgeDoorComponentProps {
   onBadgeClick?: (badgeId: string) => void;
 }
 
 export default function FridgeDoorComponent({ onBadgeClick }: FridgeDoorComponentProps) {
-  const { fridgeDoor, updateBadgePlacement, removeBadgeFromFridge } = useGameStore();
+  const { fridgeDoor, updateBadgePlacement } = useGameStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
   const dragInfo = useRef<{
     badgeId: string;
     startX: number;
     startY: number;
     origX: number;
     origY: number;
+    rafPending: boolean;
+    pendingX: number;
+    pendingY: number;
   } | null>(null);
+
+  // Keep a stable ref to current placements so handlePointerDown doesn't need
+  // fridgeDoor.placements in its dependency array — avoiding a new callback
+  // on every badge move and, by extension, an extra re-render of every badge.
+  const placementsRef = useRef(fridgeDoor.placements);
+  placementsRef.current = fridgeDoor.placements;
 
   const handlePointerDown = useCallback((e: React.PointerEvent, badgeId: string) => {
     if (!containerRef.current) return;
     e.preventDefault();
 
-    const rect = containerRef.current.getBoundingClientRect();
-    const placement = fridgeDoor.placements.find((p) => p.badgeId === badgeId);
+    const placement = placementsRef.current.find((p) => p.badgeId === badgeId);
     if (!placement) return;
 
     dragInfo.current = {
@@ -103,10 +119,13 @@ export default function FridgeDoorComponent({ onBadgeClick }: FridgeDoorComponen
       startY: e.clientY,
       origX: placement.x,
       origY: placement.y,
+      rafPending: false,
+      pendingX: placement.x,
+      pendingY: placement.y,
     };
 
     // Bring to front
-    const maxZ = fridgeDoor.placements.reduce((m, p) => Math.max(m, p.zIndex), 0);
+    const maxZ = placementsRef.current.reduce((m, p) => Math.max(m, p.zIndex), 0);
     updateBadgePlacement(badgeId, { zIndex: maxZ + 1 });
     setIsDragging(true);
 
@@ -117,7 +136,23 @@ export default function FridgeDoorComponent({ onBadgeClick }: FridgeDoorComponen
       const dy = ((moveEvent.clientY - dragInfo.current.startY) / containerRect.height) * 100;
       const newX = Math.max(5, Math.min(95, dragInfo.current.origX + dx));
       const newY = Math.max(5, Math.min(95, dragInfo.current.origY + dy));
-      updateBadgePlacement(dragInfo.current.badgeId, { x: newX, y: newY });
+
+      // Buffer the latest position and flush via RAF to cap store writes at ~60 fps
+      // even when pointermove fires faster (e.g. high-refresh displays).
+      dragInfo.current.pendingX = newX;
+      dragInfo.current.pendingY = newY;
+
+      if (!dragInfo.current.rafPending) {
+        dragInfo.current.rafPending = true;
+        requestAnimationFrame(() => {
+          if (!dragInfo.current) return;
+          dragInfo.current.rafPending = false;
+          updateBadgePlacement(dragInfo.current.badgeId, {
+            x: dragInfo.current.pendingX,
+            y: dragInfo.current.pendingY,
+          });
+        });
+      }
     };
 
     const handleUp = (upEvent: PointerEvent) => {
@@ -139,7 +174,7 @@ export default function FridgeDoorComponent({ onBadgeClick }: FridgeDoorComponen
 
     window.addEventListener('pointermove', handleMove);
     window.addEventListener('pointerup', handleUp);
-  }, [fridgeDoor.placements, updateBadgePlacement, onBadgeClick]);
+  }, [updateBadgePlacement, onBadgeClick]);
 
   // Deselect on outside click
   const handleContainerClick = useCallback(() => {

@@ -10,11 +10,40 @@ interface Badge3DViewerProps {
   className?: string;
 }
 
+/** Traverse a THREE.Object3D and dispose all geometries and materials. */
+function disposeObject(obj: THREE.Object3D) {
+  obj.traverse((child) => {
+    if ((child as THREE.Mesh).isMesh) {
+      const mesh = child as THREE.Mesh;
+      if (mesh.geometry) mesh.geometry.dispose();
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      materials.forEach((m) => {
+        if (m) {
+          // Dispose textures attached to the material
+          Object.values(m).forEach((val) => {
+            if (val instanceof THREE.Texture) val.dispose();
+          });
+          m.dispose();
+        }
+      });
+    }
+    if ((child as THREE.Points).isPoints) {
+      const pts = child as THREE.Points;
+      if (pts.geometry) pts.geometry.dispose();
+      if (pts.material) {
+        (pts.material as THREE.Material).dispose();
+      }
+    }
+  });
+}
+
 export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  // Track the RAF id in a ref so cleanup always cancels the latest frame,
+  // even if the animate() closure has been re-created.
+  const animFrameRef = useRef<number>(0);
   const stateRef = useRef<{
     renderer: THREE.WebGLRenderer;
-    animFrame: number;
     isDragging: boolean;
     lastX: number;
     lastY: number;
@@ -191,11 +220,9 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
     }
 
     const clock = new THREE.Clock();
-    let animFrame: number = 0;
 
     const state = {
       renderer,
-      animFrame,
       isDragging: false,
       lastX: 0,
       lastY: 0,
@@ -210,7 +237,8 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
     stateRef.current = state;
 
     const animate = () => {
-      animFrame = requestAnimationFrame(animate);
+      // Store the RAF id in a ref so cleanup can reliably cancel it.
+      animFrameRef.current = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
       if (!state.isDragging) {
@@ -230,7 +258,6 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
       renderer.render(scene, camera);
     };
     animate();
-    state.animFrame = animFrame!;
 
     // Interaction
     const onPointerDown = (e: PointerEvent) => {
@@ -273,17 +300,27 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(animFrame);
+      // Cancel the animation loop first to avoid rendering after disposal.
+      cancelAnimationFrame(animFrameRef.current);
+
+      // Remove event listeners
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       renderer.domElement.removeEventListener('wheel', onWheel);
       renderer.domElement.removeEventListener('dblclick', onDblClick);
       window.removeEventListener('resize', handleResize);
+
+      // Dispose all THREE.js objects to free GPU memory.
+      // renderer.dispose() alone does NOT free geometries or materials.
+      disposeObject(scene);
       renderer.dispose();
+
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
+
+      stateRef.current = null;
     };
   }, [badge.id]);
 

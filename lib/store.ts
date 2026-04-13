@@ -42,6 +42,39 @@ const createInitialFridgeDoor = (): FridgeDoor => ({
   maxSlots: 12,
 });
 
+// ── Debounced localStorage storage ────────────────────────────────
+// Wrap localStorage so that rapid successive writes (e.g. badge drag at 60 fps)
+// are batched: the actual serialisation only happens once the writes settle for
+// at least DEBOUNCE_MS milliseconds.
+const PERSIST_DEBOUNCE_MS = 300;
+
+function createDebouncedStorage() {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  return {
+    getItem: (key: string) => {
+      if (typeof window === 'undefined') return null;
+      return localStorage.getItem(key);
+    },
+    setItem: (key: string, value: string) => {
+      if (typeof window === 'undefined') return;
+      if (timer !== null) clearTimeout(timer);
+      timer = setTimeout(() => {
+        localStorage.setItem(key, value);
+        timer = null;
+      }, PERSIST_DEBOUNCE_MS);
+    },
+    removeItem: (key: string) => {
+      if (typeof window === 'undefined') return;
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      localStorage.removeItem(key);
+    },
+  };
+}
+
 interface GameStore extends GameState {
   // Gacha actions
   pullSingle: () => PullResult | null;
@@ -141,22 +174,21 @@ export const useGameStore = create<GameStore>()(
         const results = tenPull(pityCount, ownedIds);
 
         set((state) => {
-          let updatedBadges = [...state.userBadges];
+          // Build a Map for O(1) badge lookups instead of O(n) array finds
+          // inside a forEach loop — reduces pullTen complexity from O(n×m) to O(n+m).
+          const badgeMap = new Map<string, UserBadge>(
+            state.userBadges.map((b) => [b.badgeId, { ...b }])
+          );
+
           let totalFragments = state.user.fragments;
 
           results.forEach((result) => {
             totalFragments += result.fragmentsGained;
-            const existing = updatedBadges.find(
-              (b) => b.badgeId === result.badge.id
-            );
+            const existing = badgeMap.get(result.badge.id);
             if (existing) {
-              updatedBadges = updatedBadges.map((b) =>
-                b.badgeId === result.badge.id
-                  ? { ...b, quantity: b.quantity + 1 }
-                  : b
-              );
+              badgeMap.set(result.badge.id, { ...existing, quantity: existing.quantity + 1 });
             } else {
-              updatedBadges.push({
+              badgeMap.set(result.badge.id, {
                 badgeId: result.badge.id,
                 quantity: 1,
                 obtainedAt: new Date().toISOString(),
@@ -179,7 +211,7 @@ export const useGameStore = create<GameStore>()(
               coins: state.user.coins - TEN_PULL_COST,
               fragments: totalFragments,
             },
-            userBadges: updatedBadges,
+            userBadges: Array.from(badgeMap.values()),
             pityCount: lastPity,
             gachaRecords: [...newRecords, ...state.gachaRecords].slice(0, 500),
           };
@@ -350,9 +382,7 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'fridge-badge-game-storage',
-      storage: createJSONStorage(() =>
-        typeof window !== 'undefined' ? localStorage : ({} as Storage)
-      ),
+      storage: createJSONStorage(createDebouncedStorage),
     }
   )
 );
