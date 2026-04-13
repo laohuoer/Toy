@@ -14,26 +14,42 @@ interface Badge3DViewerProps {
 
 // ── Emoji-face overlay ────────────────────────────────────────────
 /**
- * Loads the badge's pre-downloaded emoji PNG and attaches a flat
- * plane onto the front face of `group`, creating an enamel-pin look.
+ * Loads the badge's face image and attaches it as a flat plane on top
+ * of the 3D badge body, creating an enamel-pin look.
  *
- * The plane is slightly larger than the badge's colored body so the
- * emoji sits flush and centred.  alphaTest removes the transparent
- * padding that surrounds Twemoji images.
+ * Image resolution priority:
+ *   1. badge.imageUrl  (code-specified custom URL)
+ *   2. /images/badges/{badge.id}.png  (convention-based, auto-downloaded)
+ *   3. nothing — badge still looks fine with just the 3D colored body
  *
- * Called after the geometry (GLB or procedural) is ready.
- * If the image 404s or fails for any reason the badge still looks
- * fine — the error is silently swallowed.
+ * The URL for (1) can be:
+ *   - A relative path starting with '/'  → prepended with BASE_PATH
+ *   - A full https:// URL                → used as-is (CORS must allow it)
+ *
+ * If the image fails to load the error is silently swallowed.
  */
 function attachEmojiLayer(
   group: THREE.Group,
-  badgeId: string,
+  badge: Badge,
   basePath: string,
   isCancelled: () => boolean,
 ) {
+  // Resolve the image URL to load
+  let imageUrl: string;
+  if (badge.imageUrl) {
+    // Custom URL: if it starts with '/' treat as relative (add basePath),
+    // otherwise use as absolute (e.g. https://…)
+    imageUrl = badge.imageUrl.startsWith('/')
+      ? `${basePath}${badge.imageUrl}`
+      : badge.imageUrl;
+  } else {
+    // Convention-based fallback: /images/badges/{id}.png
+    imageUrl = `${basePath}/images/badges/${badge.id}.png`;
+  }
+
   const loader = new THREE.TextureLoader();
   loader.load(
-    `${basePath}/images/badges/${badgeId}.png`,
+    imageUrl,
     (tex) => {
       if (isCancelled()) return;
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -298,7 +314,7 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
           badgeGroup.add(model);
 
           // Overlay the emoji image on the front face
-          attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
+          attachEmojiLayer(badgeGroup, badge, BASE_PATH, () => cancelled);
 
           setIsLoading(false);
         },
@@ -310,14 +326,14 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
             error,
           );
           buildProceduralBadge(badgeGroup, badge);
-          attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
+          attachEmojiLayer(badgeGroup, badge, BASE_PATH, () => cancelled);
           setIsLoading(false);
         },
       );
     } else {
       // No modelUrl — use the built-in procedural geometry immediately
       buildProceduralBadge(badgeGroup, badge);
-      attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
+      attachEmojiLayer(badgeGroup, badge, BASE_PATH, () => cancelled);
     }
 
     // ── State ref ──────────────────────────────────────────────
