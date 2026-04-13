@@ -166,7 +166,7 @@ export default function BadgeCollection() {
       </div>
 
       {/* Badge Grid */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      <div className="flex-1 overflow-y-auto scrollable px-4 pb-4">
         <div className="grid grid-cols-4 gap-3">
           {filteredBadges.map((badge) => {
             const owned = hasBadge(badge.id);

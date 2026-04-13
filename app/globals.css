@@ -4,20 +4,43 @@
 
 :root {
   --fridge-metal: #c8d6e5;
+  /* iOS safe area */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
 }
 
-* {
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after {
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
-html, body {
+html {
   overscroll-behavior: none;
+  overflow: hidden;
+  height: 100%;
 }
 
+body {
+  overscroll-behavior: none;
+  overflow: hidden;
+  height: 100%;
+  /* Prevent iOS bounce */
+  position: fixed;
+  width: 100%;
+}
+
+/* allow individual scrollable areas */
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Safe area utilities ─────────────────────────────────── */
 @layer utilities {
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px); }
 
   .text-gradient-gold {
     background: linear-gradient(135deg, #f7971e, #ffd200);
@@ -26,48 +49,50 @@ html, body {
     -webkit-text-fill-color: transparent;
   }
 
-  .text-gradient-legendary {
-    background: linear-gradient(135deg, #f7971e 0%, #ffd200 50%, #f7971e 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 3s linear infinite;
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
-@keyframes animate-in {
-  from { opacity: 0; transform: scale(0.95) translateY(4px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+/* ── Animations ─────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
 }
 
-.animate-in {
-  animation: animate-in 0.2s ease-out forwards;
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
 }
 
-@keyframes zoom-in-95 {
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zoomIn95 {
   from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.zoom-in-95 {
-  animation: zoom-in-95 0.2s ease-out forwards;
-}
+/* ── Component animations ───────────────────────────────── */
+.animate-in { animation: fadeIn 0.25s ease-out forwards; }
+.fade-in    { animation: fadeIn 0.25s ease-out forwards; }
+.zoom-in-95 { animation: zoomIn95 0.2s ease-out forwards; }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 999px;
-}
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #374151; border-radius: 999px; }
 
-/* Line clamp */
+/* ── Text utilities ─────────────────────────────────────── */
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
@@ -79,4 +104,9 @@ html, body {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+/* ── Page transition ────────────────────────────────────── */
+main > * {
+  animation: scaleIn 0.2s ease-out;
 }

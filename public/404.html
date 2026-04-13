@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>冰箱贴徽章收集游戏</title>
+  <script>
+    // SPA redirect for GitHub Pages
+    // When GitHub Pages serves a 404, this page intercepts it and
+    // redirects to the correct SPA route via sessionStorage
+    (function () {
+      var segmentCount = 1; // depth of base path (e.g. /Toy/ = 1)
+      var l = window.location;
+      var basePath = l.pathname.split('/').slice(0, segmentCount + 1).join('/');
+      var path = l.pathname.slice(basePath.length) || '/';
+      var redirectUrl = basePath + '/?p=' + encodeURIComponent(path + l.search) + l.hash;
+      l.replace(redirectUrl);
+    })();
+  </script>
+</head>
+<body></body>
+</html>

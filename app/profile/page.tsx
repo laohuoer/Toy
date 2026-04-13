@@ -89,7 +89,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="flex flex-col overflow-y-auto h-screen max-h-screen">
+    <div className="flex flex-col overflow-y-auto scrollable h-screen max-h-screen">
       {/* Profile Header */}
       <div
         className="relative px-4 pt-6 pb-8"
