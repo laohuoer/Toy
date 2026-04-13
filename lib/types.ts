@@ -3,14 +3,12 @@
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
 
 export type BadgeSeries =
-  | 'animals'
-  | 'food'
-  | 'space'
-  | 'nature'
-  | 'tech'
-  | 'fantasy'
-  | 'sports'
-  | 'music';
+  | 'toy_story'
+  | 'monsters_inc'
+  | 'finding_nemo'
+  | 'incredibles'
+  | 'cars'
+  | 'ratatouille';
 
 export interface Badge {
   id: string;
