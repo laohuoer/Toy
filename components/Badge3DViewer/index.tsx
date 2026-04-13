@@ -12,6 +12,58 @@ interface Badge3DViewerProps {
   className?: string;
 }
 
+// ── Emoji-face overlay ────────────────────────────────────────────
+/**
+ * Loads the badge's pre-downloaded emoji PNG and attaches a flat
+ * plane onto the front face of `group`, creating an enamel-pin look.
+ *
+ * The plane is slightly larger than the badge's colored body so the
+ * emoji sits flush and centred.  alphaTest removes the transparent
+ * padding that surrounds Twemoji images.
+ *
+ * Called after the geometry (GLB or procedural) is ready.
+ * If the image 404s or fails for any reason the badge still looks
+ * fine — the error is silently swallowed.
+ */
+function attachEmojiLayer(
+  group: THREE.Group,
+  badgeId: string,
+  basePath: string,
+  isCancelled: () => boolean,
+) {
+  const loader = new THREE.TextureLoader();
+  loader.load(
+    `${basePath}/images/badges/${badgeId}.png`,
+    (tex) => {
+      if (isCancelled()) return;
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy  = 4; // sharper at oblique angles
+
+      // Square plane that covers most of the badge face.
+      // The badge body fits in roughly [-1, +1] after auto-scaling,
+      // so 1.55 gives a slight inset from the edge.
+      const geo = new THREE.PlaneGeometry(1.55, 1.55);
+      const mat = new THREE.MeshStandardMaterial({
+        map:         tex,
+        transparent: true,
+        alphaTest:   0.08,   // discard empty pixels around the emoji
+        roughness:   0.25,
+        metalness:   0.0,
+        side:        THREE.FrontSide,
+        depthWrite:  false,  // avoid z-fighting with the badge surface
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      // Place 0.14 units in front of the badge face so it is always
+      // visible regardless of modelType (front face sits ≤ 0.10).
+      mesh.position.z = 0.14;
+      mesh.renderOrder = 1; // render after the opaque badge body
+      group.add(mesh);
+    },
+    undefined,
+    () => { /* image not available — badge looks fine without it */ },
+  );
+}
+
 // ── Resource disposal ─────────────────────────────────────────────
 /** Traverse a THREE.Object3D and dispose all geometries, materials and textures. */
 function disposeObject(obj: THREE.Object3D) {
@@ -244,6 +296,10 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
 
           // Wrap in a sub-group so rotation/animation can be applied to badgeGroup
           badgeGroup.add(model);
+
+          // Overlay the emoji image on the front face
+          attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
+
           setIsLoading(false);
         },
         undefined, // progress callback (unused)
@@ -254,12 +310,14 @@ export default function Badge3DViewer({ badge, className }: Badge3DViewerProps) 
             error,
           );
           buildProceduralBadge(badgeGroup, badge);
+          attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
           setIsLoading(false);
         },
       );
     } else {
       // No modelUrl — use the built-in procedural geometry immediately
       buildProceduralBadge(badgeGroup, badge);
+      attachEmojiLayer(badgeGroup, badge.id, BASE_PATH, () => cancelled);
     }
 
     // ── State ref ──────────────────────────────────────────────
