@@ -29,7 +29,29 @@ export interface Badge {
    * 若不填，Badge3DViewer 自动降级为程序生成的几何体。
    */
   modelUrl?: string;
-}
+  /**
+   * 自定义徽章正面图片，叠加在 3D 徽章体之上（搪瓷徽章效果）。
+   *
+   * ── 三种使用方式 ──────────────────────────────────────────────────
+   *
+   * 方式一（最简单，无需改代码）
+   *   直接替换 public/images/badges/{badge.id}.png
+   *   支持任意 PNG/JPG/WebP，建议正方形、背景透明，≥128×128
+   *   此字段留空即可，Badge3DViewer 会自动按约定路径加载
+   *
+   * 方式二（代码指定相对路径）
+   *   imageUrl: '/images/custom/woody_custom.png'
+   *   文件放在 public/ 下任意位置，路径以 / 开头
+   *
+   * 方式三（外部 URL）
+   *   imageUrl: 'https://example.com/my-badge-face.png'
+   *   直接加载远程图片（注意目标服务器须允许 CORS）
+   *
+   * 若此字段为空，系统自动尝试 /images/badges/{badge.id}.png，
+   * 两者都找不到时徽章仍正常显示（纯色 3D 体）。
+   * ────────────────────────────────────────────────────────────────
+   */
+  imageUrl?: string;
 
 export interface UserBadge {
   badgeId: string;
