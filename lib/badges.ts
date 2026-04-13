@@ -15,6 +15,7 @@ export const BADGES: Badge[] = [
     storyText: '你是我见过最好的牛仔，永远！',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_woody.glb',
   },
   {
     id: 'badge_buzz',
@@ -29,6 +30,7 @@ export const BADGES: Badge[] = [
     storyText: '飞向无限，直达宇宙的那一端！',
     obtainMethod: '扭蛋保底 / 集齐玩具总动员系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_buzz.glb',
   },
   {
     id: 'badge_alien',
@@ -43,6 +45,7 @@ export const BADGES: Badge[] = [
     storyText: '爪子！披萨星球的神圣守护之物已降临你的冰箱。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_alien.glb',
   },
   {
     id: 'badge_forky',
@@ -57,6 +60,7 @@ export const BADGES: Badge[] = [
     storyText: '我是垃圾！……不，你是宝尼最珍贵的宝贝。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_forky.glb',
   },
   {
     id: 'badge_bo_peep',
@@ -71,6 +75,7 @@ export const BADGES: Badge[] = [
     storyText: '独立、勇敢，她从不等待别人来拯救。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_bo_peep.glb',
   },
   {
     id: 'badge_buzz_helmet',
@@ -85,6 +90,7 @@ export const BADGES: Badge[] = [
     storyText: '紫色合金头盔与白色翅膀，承载着宇宙飞侠的无限荣耀。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_buzz_helmet.glb',
   },
   {
     id: 'badge_andy_footprint',
@@ -99,6 +105,7 @@ export const BADGES: Badge[] = [
     storyText: '鞋底的"ANDY"，是爱最深刻也最温柔的印记。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_andy_footprint.glb',
   },
   {
     id: 'badge_rocket_ship',
@@ -113,6 +120,7 @@ export const BADGES: Badge[] = [
     storyText: '那艘薛定谔的飞船，总在最需要的时候出现。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_rocket_ship.glb',
   },
 
   // ── Monsters Inc / Monsters University ────────────────────────────
@@ -129,6 +137,7 @@ export const BADGES: Badge[] = [
     storyText: '怪兽城惊吓冠军，却因一个叫阿布的小女孩彻底改变了。',
     obtainMethod: '扭蛋保底 / 集齐怪兽电力公司系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_sulley.glb',
   },
   {
     id: 'badge_mike',
@@ -143,6 +152,7 @@ export const BADGES: Badge[] = [
     storyText: '努力是唯一出路，他用行动证明了这一点！',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_mike.glb',
   },
   {
     id: 'badge_boo',
@@ -157,6 +167,7 @@ export const BADGES: Badge[] = [
     storyText: '哈！她的笑声，点亮了整个怪兽城。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_boo.glb',
   },
   {
     id: 'badge_scare_door',
@@ -171,6 +182,7 @@ export const BADGES: Badge[] = [
     storyText: '每一扇门背后，都藏着一个孩子的梦境与秘密。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_scare_door.glb',
   },
   {
     id: 'badge_one_eye_symbol',
@@ -185,6 +197,7 @@ export const BADGES: Badge[] = [
     storyText: '一只眼睛，看遍怪兽世界的喜怒哀乐。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_one_eye_symbol.glb',
   },
   {
     id: 'badge_mu_emblem',
@@ -199,6 +212,7 @@ export const BADGES: Badge[] = [
     storyText: 'MU！这里是每一头怪兽开启惊吓之梦的地方。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_mu_emblem.glb',
   },
   {
     id: 'badge_scream_canister',
@@ -213,6 +227,7 @@ export const BADGES: Badge[] = [
     storyText: '一声尖叫，足以点亮怪兽城的万家灯火。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'diamond',
+    modelUrl: '/models/badge_scream_canister.glb',
   },
   {
     id: 'badge_sulley_tail',
@@ -227,6 +242,7 @@ export const BADGES: Badge[] = [
     storyText: '那条独一无二的蓝色大尾巴，是毛怪最有力的表情武器。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_sulley_tail.glb',
   },
 
   // ── Finding Nemo / Finding Dory ───────────────────────────────────
@@ -243,6 +259,7 @@ export const BADGES: Badge[] = [
     storyText: '就算大海那么大，爸爸也一定会找到你。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_nemo.glb',
   },
   {
     id: 'badge_marlin',
@@ -257,6 +274,7 @@ export const BADGES: Badge[] = [
     storyText: '担忧是因为爱，而爱让一切冒险都值得。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_marlin.glb',
   },
   {
     id: 'badge_dory',
@@ -271,6 +289,7 @@ export const BADGES: Badge[] = [
     storyText: '就算忘了一切，也不会忘记一直向前游！',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_dory.glb',
   },
   {
     id: 'badge_gill',
@@ -285,6 +304,7 @@ export const BADGES: Badge[] = [
     storyText: '每条鱼都渴望归海，自由才是真正的终点。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_gill.glb',
   },
   {
     id: 'badge_crush',
@@ -299,6 +319,7 @@ export const BADGES: Badge[] = [
     storyText: '随洋流漂流，这才是真正的滑浪精神，好兄弟！',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_crush.glb',
   },
   {
     id: 'badge_whale_speak',
@@ -313,6 +334,7 @@ export const BADGES: Badge[] = [
     storyText: '在深海中，多莉用鲸语倾诉着对尼莫的思念。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_whale_speak.glb',
   },
   {
     id: 'badge_coral_reef',
@@ -327,6 +349,7 @@ export const BADGES: Badge[] = [
     storyText: '海底世界最绚烂的彩虹，是属于每条鱼的永恒家园。',
     obtainMethod: '扭蛋保底 / 集齐海底总动员系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_coral_reef.glb',
   },
 
   // ── The Incredibles ───────────────────────────────────────────────
@@ -343,6 +366,7 @@ export const BADGES: Badge[] = [
     storyText: '不论世界如何变，超能先生永远守护着他的家人。',
     obtainMethod: '扭蛋保底 / 集齐超人总动员系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_mr_incredible.glb',
   },
   {
     id: 'badge_elastigirl',
@@ -357,6 +381,7 @@ export const BADGES: Badge[] = [
     storyText: '无论何种形态，她永远是最强的超级英雄。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_elastigirl.glb',
   },
   {
     id: 'badge_violet',
@@ -371,6 +396,7 @@ export const BADGES: Badge[] = [
     storyText: '最初渴望隐形，最终勇敢选择闪耀。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_violet.glb',
   },
   {
     id: 'badge_dash',
@@ -385,6 +411,7 @@ export const BADGES: Badge[] = [
     storyText: '如果每个人都特别，那就没有人特别——但他才不信！',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_dash.glb',
   },
   {
     id: 'badge_jack_jack',
@@ -399,6 +426,7 @@ export const BADGES: Badge[] = [
     storyText: '一个婴儿，十七种超能力，无尽的惊喜。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_jack_jack.glb',
   },
   {
     id: 'badge_incredibles_logo',
@@ -413,6 +441,7 @@ export const BADGES: Badge[] = [
     storyText: '没有任何逆境能击倒整个超人家族。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_incredibles_logo.glb',
   },
   {
     id: 'badge_frozone_symbol',
@@ -427,6 +456,7 @@ export const BADGES: Badge[] = [
     storyText: '老兄，你知道我的超级英雄服在哪吗？',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_frozone_symbol.glb',
   },
   {
     id: 'badge_super_car',
@@ -441,6 +471,7 @@ export const BADGES: Badge[] = [
     storyText: '埃德娜·摩德亲手设计的战车，速度与科技的结晶。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_super_car.glb',
   },
 
   // ── Cars ──────────────────────────────────────────────────────────
@@ -457,6 +488,7 @@ export const BADGES: Badge[] = [
     storyText: '速度！我就是速度！——第一次踏上赛道时立下的誓言。',
     obtainMethod: '扭蛋保底 / 集齐赛车总动员系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_mcqueen.glb',
   },
   {
     id: 'badge_mater',
@@ -471,6 +503,7 @@ export const BADGES: Badge[] = [
     storyText: '我倒车比其他人前进都快！世界上最忠诚的好朋友。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_mater.glb',
   },
   {
     id: 'badge_sally',
@@ -485,6 +518,7 @@ export const BADGES: Badge[] = [
     storyText: '离开快车道，才发现水箱温泉才是她真正的家。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_sally.glb',
   },
   {
     id: 'badge_doc_hudson',
@@ -499,6 +533,7 @@ export const BADGES: Badge[] = [
     storyText: '三届活塞杯冠军，在水箱温泉找到了比荣耀更珍贵的东西。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'star',
+    modelUrl: '/models/badge_doc_hudson.glb',
   },
   {
     id: 'badge_piston_cup',
@@ -513,6 +548,7 @@ export const BADGES: Badge[] = [
     storyText: '金色活塞杯，承载着每一辆赛车毕生的梦想与荣耀。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_piston_cup.glb',
   },
   {
     id: 'badge_95',
@@ -527,6 +563,7 @@ export const BADGES: Badge[] = [
     storyText: '宝尼写在车窗上的数字，从此成为了赛车传奇。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_95.glb',
   },
   {
     id: 'badge_radiator_springs',
@@ -541,6 +578,7 @@ export const BADGES: Badge[] = [
     storyText: '66号公路旁被时代遗忘的小镇，却是世界上最温暖的地方。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_radiator_springs.glb',
   },
 
   // ── Ratatouille ───────────────────────────────────────────────────
@@ -557,6 +595,7 @@ export const BADGES: Badge[] = [
     storyText: '任何人都能做菜——即使是一只小老鼠。',
     obtainMethod: '扭蛋保底 / 集齐美食总动员系列',
     modelType: 'diamond',
+    modelUrl: '/models/badge_remy.glb',
   },
   {
     id: 'badge_linguini',
@@ -571,6 +610,7 @@ export const BADGES: Badge[] = [
     storyText: '他掌握了世界上最神奇的烹饪方式——用头发来驱动梦想。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'circle',
+    modelUrl: '/models/badge_linguini.glb',
   },
   {
     id: 'badge_chef_hat',
@@ -585,6 +625,7 @@ export const BADGES: Badge[] = [
     storyText: '一顶厨师帽，承载着小老鼠征服美食王国的伟大梦想。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'hexagon',
+    modelUrl: '/models/badge_chef_hat.glb',
   },
   {
     id: 'badge_french_dish',
@@ -599,6 +640,7 @@ export const BADGES: Badge[] = [
     storyText: '一道完美的法式料理，足以让最挑剔的美食评论家落泪。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'shield',
+    modelUrl: '/models/badge_french_dish.glb',
   },
   {
     id: 'badge_eiffel_tower',
@@ -613,6 +655,7 @@ export const BADGES: Badge[] = [
     storyText: '巴黎的夜空下，美食与艺术共同守护着这座铁塔。',
     obtainMethod: '扭蛋抽奖',
     modelType: 'diamond',
+    modelUrl: '/models/badge_eiffel_tower.glb',
   },
 ];
 
