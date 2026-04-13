@@ -23,6 +23,12 @@ export interface Badge {
   storyText: string;
   obtainMethod: string;
   modelType: 'circle' | 'hexagon' | 'star' | 'shield' | 'diamond';
+  /**
+   * 可选的 .glb/.gltf 文件路径（相对于 public/，不含 basePath 前缀）。
+   * 示例：'/models/badge_woody.glb'
+   * 若不填，Badge3DViewer 自动降级为程序生成的几何体。
+   */
+  modelUrl?: string;
 }
 
 export interface UserBadge {
