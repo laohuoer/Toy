@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { useGameStore } from '@/lib/store';
 import {
   BADGES,
@@ -12,9 +13,22 @@ import {
   RARITY_GLOW,
   SERIES_LIST,
 } from '@/lib/badges';
-import { BadgeSeries, Rarity } from '@/lib/types';
+import { Badge, BadgeSeries, Rarity } from '@/lib/types';
 import { RarityBadge, Modal } from '@/components/ui';
 import { cn } from '@/lib/utils';
+
+// Lazy-load the heavy Three.js viewer
+const Badge3DViewer = dynamic(() => import('@/components/Badge3DViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-2xl">
+      <div className="text-center">
+        <div className="text-4xl animate-spin mb-2">🔮</div>
+        <p className="text-gray-500 text-xs">3D 加载中…</p>
+      </div>
+    </div>
+  ),
+});
 
 type FilterRarity = Rarity | 'all';
 type FilterSeries = BadgeSeries | 'all';
@@ -26,6 +40,8 @@ export default function BadgeCollection() {
   const [filterSeries, setFilterSeries] = useState<FilterSeries>('all');
   const [filterOwned, setFilterOwned] = useState<FilterOwned>('all');
   const [selectedBadge, setSelectedBadge] = useState<string | null>(null);
+  // 3D viewer state
+  const [viewing3DBadge, setViewing3DBadge] = useState<Badge | null>(null);
 
   const ownedCount = userBadges.length;
   const totalCount = BADGES.length;
@@ -296,14 +312,107 @@ export default function BadgeCollection() {
             ) : (
               <button
                 onClick={handleAddToFridge}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors"
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors mb-2"
               >
                 📌 贴到冰箱门
               </button>
             )}
+
+            {/* 3D Viewer button */}
+            <button
+              onClick={() => {
+                setViewing3DBadge(selectedBadgeData);
+                setSelectedBadge(null);
+              }}
+              className="w-full py-2.5 rounded-xl border border-purple-600/60 bg-purple-900/20 hover:bg-purple-800/30 text-purple-300 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              <span>🔮</span>
+              <span>3D 欣赏</span>
+            </button>
           </div>
         )}
       </Modal>
+
+      {/* ── 3D Viewer Full-Screen Modal ─────────────────────── */}
+      {viewing3DBadge && (
+        <div className="fixed inset-0 z-[120] flex flex-col bg-gray-950">
+          {/* Header */}
+          <div
+            className="flex items-center justify-between px-4 py-3 flex-shrink-0"
+            style={{
+              background: `linear-gradient(90deg, ${viewing3DBadge.bgGradient.includes('135deg') ? viewing3DBadge.bgGradient.replace('linear-gradient(135deg,', 'linear-gradient(90deg,') : viewing3DBadge.bgGradient})`,
+              opacity: 0.95,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{viewing3DBadge.emoji}</span>
+              <div>
+                <p className="text-white font-bold text-base leading-tight">{viewing3DBadge.name}</p>
+                <p
+                  className="text-xs font-semibold"
+                  style={{ color: RARITY_COLORS[viewing3DBadge.rarity] }}
+                >
+                  {RARITY_NAMES[viewing3DBadge.rarity]}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setViewing3DBadge(null)}
+              className="w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center text-xl transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* 3D Canvas */}
+          <div className="flex-1 relative min-h-0">
+            <Badge3DViewer badge={viewing3DBadge} className="w-full h-full" />
+
+            {/* Interaction hint */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-xs text-gray-400 pointer-events-none select-none">
+              <span className="flex items-center gap-1 bg-black/50 rounded-full px-3 py-1">
+                <span>👆</span> 拖拽旋转
+              </span>
+              <span className="flex items-center gap-1 bg-black/50 rounded-full px-3 py-1">
+                <span>🤏</span> 捏合缩放
+              </span>
+              <span className="flex items-center gap-1 bg-black/50 rounded-full px-3 py-1">
+                <span>👆👆</span> 双击复位
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom info strip */}
+          <div className="flex-shrink-0 px-4 py-3 bg-gray-900/90 border-t border-gray-800">
+            <p className="text-xs text-gray-400 text-center leading-relaxed italic">
+              「{viewing3DBadge.storyText}」
+            </p>
+            {/* Switch to another owned badge */}
+            <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide pb-1 justify-center">
+              {userBadges.slice(0, 10).map((ub) => {
+                const b = BADGE_MAP[ub.badgeId];
+                if (!b) return null;
+                return (
+                  <button
+                    key={b.id}
+                    onClick={() => setViewing3DBadge(b)}
+                    className={cn(
+                      'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all',
+                      viewing3DBadge.id === b.id
+                        ? 'ring-2 ring-white scale-110'
+                        : 'opacity-60 hover:opacity-100',
+                    )}
+                    style={{ background: b.bgGradient }}
+                    title={b.name}
+                  >
+                    {b.emoji}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -67,6 +67,8 @@ interface GameStore extends GameState {
   getOwnedBadgeIds: () => string[];
   isOnFridge: (badgeId: string) => boolean;
   hasBadge: (badgeId: string) => boolean;
+  // Reset
+  resetGame: () => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -331,6 +333,19 @@ export const useGameStore = create<GameStore>()(
         return get().userBadges.some(
           (b) => b.badgeId === badgeId && b.quantity > 0
         );
+      },
+
+      // ── Reset ──────────────────────────────────────────────────
+      resetGame: () => {
+        set({
+          user: createInitialUser(),
+          userBadges: [],
+          fridgeDoor: createInitialFridgeDoor(),
+          gachaRecords: [],
+          pityCount: 0,
+          checkinLogs: [],
+          unlockedAchievements: [],
+        });
       },
     }),
     {

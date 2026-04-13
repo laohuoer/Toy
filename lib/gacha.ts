@@ -2,8 +2,8 @@ import { Badge, GachaRecord, Rarity } from './types';
 import { BADGES } from './badges';
 
 // ── Constants ──────────────────────────────────────────────────────
-export const SINGLE_PULL_COST = 160;
-export const TEN_PULL_COST = 1440; // 10% discount
+export const SINGLE_PULL_COST = 1;
+export const TEN_PULL_COST = 9; // 10% discount
 export const PITY_THRESHOLD = 90; // guaranteed legendary after 90 pulls
 export const SOFT_PITY_START = 74; // increased rate from pull 74
 export const FRAGMENT_PER_DUPE = 10;

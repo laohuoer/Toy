@@ -30,10 +30,13 @@ export default function ProfilePage() {
     updateUsername,
     updateAvatar,
     pityCount,
+    resetGame,
   } = useGameStore();
 
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(user.username);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState('');
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [showRecordsModal, setShowRecordsModal] = useState(false);
 
@@ -308,7 +311,6 @@ export default function ProfilePage() {
 
         <button
           onClick={() => {
-            const state = useGameStore.getState();
             const text = `我已收集 ${userBadges.length} 枚徽章，其中传说 ${legendaryCount} 枚！🧊✨`;
             if (navigator.share) {
               navigator.share({ title: '冰箱贴徽章收集游戏', text, url: window.location.origin });
@@ -324,6 +326,18 @@ export default function ProfilePage() {
             <span className="text-sm text-white font-medium">分享我的收集</span>
           </div>
           <span className="text-gray-400 text-xs">›</span>
+        </button>
+
+        {/* Reset button */}
+        <button
+          onClick={() => { setResetConfirmText(''); setShowResetModal(true); }}
+          className="w-full flex items-center justify-between bg-red-900/20 hover:bg-red-900/40 border border-red-800/40 hover:border-red-600/60 rounded-xl px-4 py-3 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-xl">🗑️</span>
+            <span className="text-sm text-red-400 font-medium">重置存档</span>
+          </div>
+          <span className="text-red-500/60 text-xs">危险 ›</span>
         </button>
       </div>
 
@@ -391,6 +405,53 @@ export default function ProfilePage() {
           {gachaRecords.length === 0 && (
             <div className="text-center py-8 text-gray-500">还没有抽奖记录</div>
           )}
+        </div>
+      </Modal>
+
+      {/* Reset Confirm Modal */}
+      <Modal isOpen={showResetModal} onClose={() => setShowResetModal(false)} title="⚠️ 重置存档" size="sm">
+        <div className="space-y-4">
+          <div className="bg-red-900/20 border border-red-700/40 rounded-xl p-3 text-sm text-red-300 leading-relaxed">
+            此操作将 <span className="font-bold text-red-400">永久清除</span> 所有进度，包括：
+            <ul className="mt-2 space-y-1 list-disc list-inside text-red-400/80">
+              <li>全部 {userBadges.length} 枚徽章</li>
+              <li>金币余额与碎片</li>
+              <li>冰箱门布局</li>
+              <li>签到记录与成就</li>
+            </ul>
+            <p className="mt-2 text-red-300">初始金币将重置为 <span className="font-bold">1600 🪙</span>。</p>
+          </div>
+          <p className="text-xs text-gray-400 text-center">
+            请输入 <span className="font-mono font-bold text-white bg-gray-700 px-1.5 py-0.5 rounded">重置存档</span> 确认操作
+          </p>
+          <input
+            type="text"
+            value={resetConfirmText}
+            onChange={(e) => setResetConfirmText(e.target.value)}
+            placeholder={'输入"重置存档"'}
+            className="w-full bg-gray-800 border border-gray-600 focus:border-red-500 rounded-xl px-4 py-2.5 text-white text-sm outline-none transition-colors text-center"
+            autoComplete="off"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowResetModal(false)}
+              className="flex-1 py-2.5 rounded-xl bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition-colors"
+            >
+              取消
+            </button>
+            <button
+              disabled={resetConfirmText !== '重置存档'}
+              onClick={() => {
+                resetGame();
+                setShowResetModal(false);
+                setResetConfirmText('');
+                toast.success('存档已重置，祝你好运！🧊');
+              }}
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed bg-red-600 hover:bg-red-500 text-white active:scale-95"
+            >
+              确认重置
+            </button>
+          </div>
         </div>
       </Modal>
     </div>
